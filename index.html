@@ -1,13 +1,219 @@
 <!DOCTYPE html>
+<head>
+  <title>Our Solar System</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <style>
+    body {
+        margin: 0;
+        background-color: #00001a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+</style>
+</head>
+
+<body>
 <div id="container"></div>
-<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<script type="module">
 
 <script>
+
   console.log(d3); // test if d3 is loaded
-  // Add an SVG
-  // Add Rectangles
-  // Add Circles
-  // Add Lines
-  // Add Polygons
+
+  const width = 1400;
+  const height = 700;
+
+  const svg = d3.select("#container")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("background", "#000055"); // same as background color ***TODO
+
+  // earth orbit
+  const earth_x = width / 2;   // center of the circle
+  const earth_y = height / 2;
+  const earth_orbit_radius = 230;
+
+  // orbit ring
+  svg.append("circle")
+      .attr("cx", width/2)
+      .attr("cy", height/2)
+      .attr("r", earth_orbit_radius)
+      .attr("stroke", "white")
+      .attr("fill", "none");
+  
+  function drawEarth() {
+    let earth = svg.append("g");
+
+    earth = svg.append("circle")
+                  .attr("r", 40)
+                  .attr("fill", "#009900");
+    
+    // earth = svg.append("rect")
+    //               .attr("x", 385)
+    //               .attr("y", 370)
+    //               .attr("width", 30)
+    //               .attr("height", 50)
+    //               .attr("fill", "#8D5524");
+
+    return earth;
+  }
+  const earth = drawEarth()
+
+  function earthOrbit() {
+      const duration = 20000; // 20 seconds
+
+      earth.transition()
+            .duration(duration)
+            .ease(d3.easeLinear)
+            .attrTween("cx", function() {
+              return function(t) {
+                return earth_x + earth_orbit_radius * Math.cos(2 * Math.PI * t);
+              }
+            })
+            .attrTween("cy", function() {
+              return function(t) {
+                return earth_y + earth_orbit_radius * Math.sin(2 * Math.PI * t);
+              }
+            })
+            .on("end", earthOrbit); // repeat infinitely
+    }
+  earthOrbit();
+
+
+  // mars orbit
+  const mars_x = width / 2;   // center of the circle
+  const mars_y = height / 2;
+  const mars_orbit_radius = 320;
+
+  // orbit ring
+  svg.append("circle")
+      .attr("cx", width/2)
+      .attr("cy", height/2)
+      .attr("r", mars_orbit_radius)
+      .attr("stroke", "white")
+      .attr("fill", "none");
+  
+  function drawMars() {
+    let mars = svg.append("g");
+
+    mars = svg.append("circle")
+                  .attr("r", 20)
+                  .attr("fill", "#b30000");
+  
+    return mars;
+  }
+  const mars = drawMars()
+
+  function marsOrbit() {
+      const duration = 40000; // 20 seconds
+
+      mars.transition()
+            .duration(duration)
+            .ease(d3.easeLinear)
+            .attrTween("cx", function() {
+              return function(t) {
+                return mars_x + mars_orbit_radius * Math.cos(2 * Math.PI * t);
+              }
+            })
+            .attrTween("cy", function() {
+              return function(t) {
+                return mars_y + mars_orbit_radius * Math.sin(2 * Math.PI * t);
+              }
+            })
+            .on("end", marsOrbit); // repeat infinitely
+    }
+  marsOrbit();
+    
+
+  // draw stars
+  function drawStar(cx, cy, nPoints, scale, color) {
+    const star = svg.append("g");
+
+    let outerRadius = 1*scale;
+    let innerRadius = .5*scale;
+
+    let data = []
+    for(let i = 0; i < nPoints * 2; i++){
+        let angle = i / (2*nPoints) * Math.PI * 2
+        let radius = i % 2 === 0 ? outerRadius : innerRadius;
+
+        let x = Math.cos(angle) * radius + cx;
+        let y = Math.sin(angle) * radius + cy;
+        data.push([x, y])
+    }
+    data.push(0)
+
+    let line = d3.line()
+        .x(d => d[0])
+        .y(d => d[1]);
+
+    d3.select("svg")
+      .append("path")
+      .attr("d", line(data))
+      .attr("stroke", "none")
+      .attr("fill", color);
+  }
+
+  // function generateStars() {
+  //   let x, y;
+  //     x = Math.random() * width;
+  //     y = Math.random() * height;
+  //     // Distance squared from circle center
+  //   // } while ((x - cx) ** 2 + (y - cy) ** 2 <= 250 ** 2);
+  //   return {x, y};
+  // }
+
+  // const numStars = 40;
+  // for (let i = 0; i < numStars; i++) { 
+  //   const { x: star_x, y: star_y } = generateStars();
+  //   if ((star_x-width/2) ** 2 + (star_y-height/2) ** 2 >= 280 ** 2) {
+  //     drawStar(star_x, star_y, 5, 10);
+  //   }
+  // }
+  drawStar(100, 100, 5, 30, "#ffff80")
+  drawStar(1200, 200, 5, 30, "#ffff80")
+  drawStar(300, 600, 5, 30, "#ffff80")
+
+  // sun
+  const rays = drawStar(width/2, height/2, 12, 110, "#ffad33")
+  // function pulseRays() {
+  //       rays
+  //           .attr("opacity", 0.15)
+  //           .transition()
+  //           .duration(900)
+  //           .attr("opacity", 0.85)
+  //           .transition()
+  //           .duration(900)
+  //           .attr("opacity", 0.15)
+  //           .on("end", pulseRays);
+  //   }
+  // pulseRays();
+
+  svg.append("circle")
+      .attr("cx", width/2)
+      .attr("cy", height/2)
+      .attr("r", 60)
+      .attr("fill", "#e6e600");
+
+  // rocket ship
+  function drawShip(cx, cy) {
+    const ship = svg.append("g");
+
+    ship.append("rect")
+          .attr("x", 1200)
+          .attr("y", 450)
+          .attr("width", 60)
+          .attr("height", 110)
+          .attr("fill", "grey");
+    
+    // ship.append("polygon")
+    //     .attr("points", "350,180 400,140 450,180")
+    //     .attr("fill", "green");
+  }
+  // drawShip(1200, 450);
+
 </script>
+
+</body>
