@@ -24,11 +24,11 @@ This project includes all required graphical primitives and various different co
 
 ## Screenshots
 
+This is a still frame of the visual. 
 <img src="withoutSunLabel.png"/>
-<figcaption>This is a still frame of the visual. </figcaption>
 
+This shows the visual when the mouse is hovering over the Sun and the label is visible. 
 <img src="withSunLabel.png"/>
-<figcaption>This shows the visual when the mouse is hovering over the Sun and the label is visible. </figcaption>
 
 ## Sources
 - D3.js library: https://d3js.org/
