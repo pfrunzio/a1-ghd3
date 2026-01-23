@@ -5,7 +5,7 @@
   <style>
     body {
         margin: 0;
-        background-color: #00001a;
+        background-color: #000055;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -48,7 +48,20 @@
 
     earth = svg.append("circle")
                   .attr("r", 40)
-                  .attr("fill", "#009900");
+                  .attr("fill", "#009900")
+                  .on("mouseover", function () {
+                    svg.append("text")
+                      .attr("id", "earth-label")
+                      .attr("x", 150)
+                      .attr("y", 350)
+                      .attr("text-anchor", "middle")
+                      .attr("font-size", "24px")
+                      .attr("fill", "white")
+                      .text("Earth");
+                  })
+                  .on("mouseout", function () {
+                    svg.select("#earth-label").remove();
+                  });
     
     // earth = svg.append("rect")
     //               .attr("x", 385)
@@ -100,7 +113,20 @@
 
     mars = svg.append("circle")
                   .attr("r", 20)
-                  .attr("fill", "#b30000");
+                  .attr("fill", "#b30000")
+                  .on("mouseover", function () {
+                    svg.append("text")
+                      .attr("id", "mars-label")
+                      .attr("x", 150)
+                      .attr("y", 350)
+                      .attr("text-anchor", "middle")
+                      .attr("font-size", "24px")
+                      .attr("fill", "white")
+                      .text("Mars");
+                  })
+                  .on("mouseout", function () {
+                    svg.select("#mars-label").remove();
+                  });
   
     return mars;
   }
@@ -127,8 +153,8 @@
   marsOrbit();
     
 
-  // draw stars
-  function drawStar(cx, cy, nPoints, scale, color) {
+  // draw stars function
+  function drawStar(cx, cy, nPoints, scale, color, rotation) {
     const star = svg.append("g");
 
     let outerRadius = 1*scale;
@@ -136,7 +162,7 @@
 
     let data = []
     for(let i = 0; i < nPoints * 2; i++){
-        let angle = i / (2*nPoints) * Math.PI * 2
+        let angle = (i / (2*nPoints) * Math.PI * 2) + rotation
         let radius = i % 2 === 0 ? outerRadius : innerRadius;
 
         let x = Math.cos(angle) * radius + cx;
@@ -156,46 +182,53 @@
       .attr("fill", color);
   }
 
-  // function generateStars() {
-  //   let x, y;
-  //     x = Math.random() * width;
-  //     y = Math.random() * height;
-  //     // Distance squared from circle center
-  //   // } while ((x - cx) ** 2 + (y - cy) ** 2 <= 250 ** 2);
-  //   return {x, y};
-  // }
+  // small stars
+  function generateStars() {
+    let x, y;
+      x = Math.random() * width;
+      y = Math.random() * height;
+      // Distance squared from circle center
+    // } while ((x - cx) ** 2 + (y - cy) ** 2 <= 250 ** 2);
+    return {x, y};
+  }
+  const numStars = 10;
+  for (let i = 0; i < numStars; i++) { 
+    const { x: star_x, y: star_y } = generateStars();
+    if ((star_x-width/2) ** 2 + (star_y-height/2) ** 2 >= 350 ** 2) {
+      drawStar(star_x, star_y, 5, 10, "#ffff80", 0);
+    }
+  }
 
-  // const numStars = 40;
-  // for (let i = 0; i < numStars; i++) { 
-  //   const { x: star_x, y: star_y } = generateStars();
-  //   if ((star_x-width/2) ** 2 + (star_y-height/2) ** 2 >= 280 ** 2) {
-  //     drawStar(star_x, star_y, 5, 10);
-  //   }
-  // }
-  drawStar(100, 100, 5, 30, "#ffff80")
-  drawStar(1200, 200, 5, 30, "#ffff80")
-  drawStar(300, 600, 5, 30, "#ffff80")
+  // big stars
+  drawStar(100, 100, 5, 30, "#ffff80", 0)
+  drawStar(1200, 200, 5, 30, "#ffff80", 0)
+  drawStar(300, 600, 5, 30, "#ffff80", 0)
 
   // sun
-  const rays = drawStar(width/2, height/2, 12, 110, "#ffad33")
-  // function pulseRays() {
-  //       rays
-  //           .attr("opacity", 0.15)
-  //           .transition()
-  //           .duration(900)
-  //           .attr("opacity", 0.85)
-  //           .transition()
-  //           .duration(900)
-  //           .attr("opacity", 0.15)
-  //           .on("end", pulseRays);
-  //   }
-  // pulseRays();
+  function drawSun() {
+    drawStar(width/2, height/2, 12, 110, "#ffad33", 0)
 
-  svg.append("circle")
+    svg.append("circle")
       .attr("cx", width/2)
       .attr("cy", height/2)
       .attr("r", 60)
-      .attr("fill", "#e6e600");
+      .attr("fill", "#e6e600")
+      .on("mouseover", function () {
+        svg.append("text")
+          .attr("id", "sun-label")
+          .attr("x", 150)
+          .attr("y", 350)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "24px")
+          .attr("fill", "white")
+          .text("Sun");
+      })
+      .on("mouseout", function () {
+        svg.select("#sun-label").remove();
+      });
+  }
+  drawSun()
+
 
   // rocket ship
   function drawShip(cx, cy) {
@@ -204,15 +237,41 @@
     ship.append("rect")
           .attr("x", 1200)
           .attr("y", 450)
-          .attr("width", 60)
-          .attr("height", 110)
-          .attr("fill", "grey");
+          .attr("width", 90)
+          .attr("height", 150)
+          .attr("fill", "#808080");
     
-    // ship.append("polygon")
-    //     .attr("points", "350,180 400,140 450,180")
-    //     .attr("fill", "green");
+    ship.append("polygon")
+        .attr("points", "1200,450 1245,400 1290,450")
+        .attr("fill", "#595959");
+    ship.append("line")
+            .attr("x1", 1200)
+            .attr("y1", 480)
+            .attr("x2", 1290)
+            .attr("y2", 480)
+            .attr("stroke", "#595959")
+            .attr("stroke-width", 3)
+            .attr("stroke-linecap", "round");
+    ship.append("line")
+            .attr("x1", 1200)
+            .attr("y1", 475)
+            .attr("x2", 1290)
+            .attr("y2", 475)
+            .attr("stroke", "#595959")
+            .attr("stroke-width", 3)
+            .attr("stroke-linecap", "round");
+    ship.append("polygon")
+        .attr("points", "1200,530 1180,600 1180,650 1200,600")
+        .attr("fill", "#595959");
+    ship.append("polygon")
+        .attr("points", "1290,530 1310,600 1310,650 1290,600")
+        .attr("fill", "#595959");
+
+    ship.append("polygon")
+        .attr("points", "1220,600 1270,600 1290,680    1265,650 1245,680 1225,650    1200,680")
+        .attr("fill", "#ff6600");
   }
-  // drawShip(1200, 450);
+  drawShip(1200, 450);
 
 </script>
 
